@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title>面向对象</title>
+		<script type="text/javascript" src="js/jquery-2.2.0.js"></script>
+		<script src="js/vue.js"></script>
+		<script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+	</head>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		
+		li,
+		ul,
+		ol {
+			list-style: none;
+		}
+		.aa{
+			height: 1000px;
+			overflow-y: auto;
+		}
+		.btn {
+			width: 600px;
+			height: 2600px;
+			/*background: #cecece;*/
+			margin: 0 auto;
+			overflow: hidden;
+			position: relative;
+			FILTER: progid:DXImageTransform.Microsoft.Gradient(gradientType=0, startColorStr=#b8c4cb, endColorStr=#f6f6f8);
+			/*IE*/
+			background: -moz-linear-gradient(top, #b8c4cb, #f6f6f8);
+			/*火狐*/
+			background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#b8c4cb), to(#f6f6f8));
+			/*谷歌*/
+		}
+		
+		.btn li {
+			width: 50px;
+			height: 30px;
+			background: white;
+			float: left;
+			border-radius: 5px;
+			line-height: 30px;
+			text-align: center;
+			margin: 10px;
+			cursor: pointer;
+		}
+		
+		.btn li:active {
+			background: darkgray;
+			color: white;
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+		
+		.tanchuang {
+			display: none;
+			width: 200px;
+			height: 200px;
+			background: white;
+			border-radius: 10px;
+			text-align: center;
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			-webkit-transform: translate(-50%, -50%);
+			-moz-transform: translate(-50%, -50%);
+			-ms-transform: translate(-50%, -50%);
+			padding: 20px;
+		}
+		
+		.tanchuang h2 {
+			color: cadetblue;
+			margin: 10px 0 10px;
+		}
+		
+		.tanchuang p {
+			color: darkgray;
+			margin: 10px 0 10px;
+		}
+	</style>
+
+	<body>
+		<div class="aa">
+			<div class="btn" id="app">
+				<ul>
+					<li>
+						<router-link to="/foo1">按钮1</router-link>
+					</li>
+					<li>
+						<router-link to="/foo2">按钮2</router-link>
+					</li>
+					<li>按钮3</li>
+					<li>按钮4</li>
+				</ul>
+				<button onclick="checkCookie()" style="width: 20px;height: 30px;"></button>
+				<div class="tanchuang">
+					<img src="" />
+					<h2>点击成功</h2>
+					<p></p>
+				</div>
+				<router-view></router-view>
+			</div>
+		</div>
+		
+
+		<script>
+//			$ //禁止body的滑动
+			document.body.ontouchmove = function(e) {
+				e.preventDefault();
+			};
+			//获取触摸点的坐标
+			var startX = 0,
+				startY = 0;
+			//touchstart事件  
+			function touchSatrtFunc(evt) {
+				try {
+					//evt.preventDefault(); //阻止触摸时浏览器的缩放、滚动条滚动等  
+
+					var touch = evt.touches[0]; //获取第一个触点  
+					var x = Number(touch.pageX); //页面触点X坐标  
+					var y = Number(touch.pageY); //页面触点Y坐标  
+					//记录触点初始位置  
+					startX = x;
+					startY = y;
+
+				} catch(e) {
+					alert('touchSatrtFunc：' + e.message);
+				}
+				console.log(startX+'a', startY)
+			}
+			document.addEventListener('touchstart', touchSatrtFunc, false);
+			//允许div的滑动
+			var _ss = document.getElementById("app");
+			_ss.ontouchmove = function(ev) {
+				ev.stopPropagation();
+				console.log(ev)
+				var _point = ev.touches[0];
+				console.log(_point+'b')
+					_top = _ss.scrollTop;
+				// 什么时候到底部
+				var _bottomFaVal = _ss.scrollHeight - _ss.offsetHeight;
+				// 到达顶端
+				if(_top === 0) {
+					// 阻止向下滑动
+					if(_point.clientY > startY) {
+						ev.preventDefault();
+					} else {
+						// 阻止冒泡
+						// 正常执行
+						ev.stopPropagation();
+					}
+				} else if(_top === _bottomFaVal) {
+					// 到达底部
+					// 阻止向上滑动
+					if(_point.clientY < startY) {
+						ev.preventDefault();
+					} else {
+						// 阻止冒泡
+						// 正常执行
+						ev.stopPropagation();
+					}
+				} else if(_top > 0 && _top < _bottomFaVal) {
+					ev.stopPropagation();
+				} else {
+					ev.preventDefault();
+				}
+			};
+			$.ajax({
+				type: "get",
+				url: "index2.html",
+				async: false,
+				dataType: "html",
+				success: function(data) {
+					window.data1 = data
+				}
+			});
+			$.ajax({
+				type: "get",
+				url: "inde3.html",
+				async: false,
+				dataType: "html",
+				success: function(data) {
+					window.data2 = data
+				}
+			});
+
+			$(function() {
+				var Objct = {
+					miaoshu: " ",
+					img: " ",
+					comeback: function() {
+						$(".tanchuang img").attr("src", this.img);
+						$(".tanchuang p").text(this.miaoshu);
+					}
+				}
+				$(".btn li").click(function() {
+					var index = $(this).index();
+					Objct.miaoshu = "您点击的是按钮" + (index + 1);
+					Objct.img = "img/img" + index + ".png";
+					Objct.comeback();
+					$(".tanchuang").show()
+				})
+			})
+		</script>
+		<script>
+			function getCookie(c_name) {
+				if(document.cookie.length > 0) {
+					c_start = document.cookie.indexOf(c_name + "=")
+					if(c_start != -1) {
+						c_start = c_start + c_name.length + 1
+						c_end = document.cookie.indexOf(";", c_start)
+						if(c_end == -1) c_end = document.cookie.length
+						return unescape(document.cookie.substring(c_start, c_end))
+					}
+				}
+				return ""
+			}
+
+			function setCookie(c_name, value, expiredays) {
+				var exdate = new Date()
+				exdate.setTime(exdate.getTime() + expiredays * 60 * 1000)
+				console.log(exdate.getTime())
+				document.cookie = c_name + "=" + escape(value) +
+					((expiredays == null) ? "" : ";expires=" + exdate.toGMTString())
+			}
+
+			function checkCookie() {
+				username = getCookie('username')
+				if(username != null && username != "") { alert('Welcome again ' + username + '!') } else {
+					username = prompt('Please enter your name:', "")
+					if(username != null && username != "") {
+						setCookie('username', username, 30)
+					}
+				}
+			}
+		</script>
+		<!--<script type="text/javascript" src="js/index.js" ></script>-->
+	</body>
+
+</html>
